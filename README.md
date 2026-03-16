@@ -1,6 +1,6 @@
 ## NoiseCut
 
-NoiseCut extracts the highest-signal insights from long-form articles. Paste a URL, and the app fetches the article, filters weak sentences, ranks the strongest ones with Gemini, and streams the result back to the UI.
+NoiseCut extracts the highest-signal insights from long-form articles. Paste a URL, and the app fetches the article, filters weak sentences, ranks the strongest ones with Gemini, and streams the result.
 
 ## Stack
 

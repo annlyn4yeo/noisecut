@@ -6,6 +6,8 @@ type CacheData = {
   title: string;
   signal_density: number;
   insights: string[];
+  full_minutes: number;
+  minutes_saved: number;
 };
 
 type NegativeCacheData = {
@@ -50,7 +52,9 @@ export async function getCached(url: string): Promise<CacheData | null> {
     "error" in cached ||
     typeof cached.title !== "string" ||
     typeof cached.signal_density !== "number" ||
-    !Array.isArray(cached.insights)
+    !Array.isArray(cached.insights) ||
+    typeof cached.full_minutes !== "number" ||
+    typeof cached.minutes_saved !== "number"
   ) {
     return null;
   }

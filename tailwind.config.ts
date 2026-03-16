@@ -11,6 +11,16 @@ const config: Config = {
       colors: {
         background: "var(--background)",
         foreground: "var(--foreground)",
+        cream: "#FAF8F4",
+        ink: "#1a1a1a",
+        signal: "#1660F5",
+        muted: "#888888",
+        faint: "#ede9e1",
+      },
+      fontFamily: {
+        playfair: ["var(--font-playfair)"],
+        mono: ["var(--font-mono)"],
+        sans: ["var(--font-inter)"],
       },
     },
   },

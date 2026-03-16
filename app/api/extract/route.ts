@@ -16,11 +16,15 @@ const POLL_INTERVAL_MS = 300;
 const POLL_TIMEOUT_MS = 8_000;
 const MAX_SENTENCES = 100;
 const MIN_WORD_COUNT = 150;
+const AVG_WORDS_PER_SENTENCE = 20;
+const WPM = 238;
 
 type CachedExtract = {
   title: string;
   signal_density: number;
   insights: string[];
+  full_minutes: number;
+  minutes_saved: number;
 };
 
 function jsonResponse(body: unknown, status = 200): Response {
@@ -166,6 +170,15 @@ export async function POST(request: Request): Promise<Response> {
         const rawSignalDensity =
           totalSentences === 0 ? 0 : insights.length / totalSentences;
         const signal_density = Math.round(rawSignalDensity * 100) / 100;
+        const fullMinutes = parseFloat(
+          ((totalSentences * AVG_WORDS_PER_SENTENCE) / WPM).toFixed(1),
+        );
+        const signalMinutes = parseFloat(
+          ((insights.length * AVG_WORDS_PER_SENTENCE) / WPM).toFixed(1),
+        );
+        const minutesSaved = parseFloat(
+          (fullMinutes - signalMinutes).toFixed(1),
+        );
 
         await setCached(
           normalizedUrl,
@@ -173,11 +186,18 @@ export async function POST(request: Request): Promise<Response> {
             title: article.title,
             signal_density,
             insights,
+            full_minutes: fullMinutes,
+            minutes_saved: minutesSaved,
           },
           getTTL(signal_density),
         );
 
-        streamLine(controller, encoder, { type: "done", signal_density });
+        streamLine(controller, encoder, {
+          type: "done",
+          signal_density,
+          full_minutes: fullMinutes,
+          minutes_saved: minutesSaved,
+        });
       } catch (error) {
         await setNegativeCache(normalizedUrl);
 

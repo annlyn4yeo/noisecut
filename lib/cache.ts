@@ -1,13 +1,14 @@
-import { createHash } from "node:crypto";
+import { createHash, randomBytes } from "node:crypto";
 
 import { Redis } from "@upstash/redis";
 
-type CacheData = {
+export type CachedResult = {
   title: string;
   signal_density: number;
   insights: string[];
   full_minutes: number;
   minutes_saved: number;
+  shareId: string;
 };
 
 type NegativeCacheData = {
@@ -44,8 +45,8 @@ function negativeCacheKey(url: string): string {
   return `neg:${hashUrl(url)}`;
 }
 
-export async function getCached(url: string): Promise<CacheData | null> {
-  const cached = await redis.get<CacheData | NegativeCacheData>(cacheKey(url));
+export async function getCached(url: string): Promise<CachedResult | null> {
+  const cached = await redis.get<CachedResult | NegativeCacheData>(cacheKey(url));
 
   if (
     !cached ||
@@ -54,7 +55,8 @@ export async function getCached(url: string): Promise<CacheData | null> {
     typeof cached.signal_density !== "number" ||
     !Array.isArray(cached.insights) ||
     typeof cached.full_minutes !== "number" ||
-    typeof cached.minutes_saved !== "number"
+    typeof cached.minutes_saved !== "number" ||
+    typeof cached.shareId !== "string"
   ) {
     return null;
   }
@@ -64,10 +66,38 @@ export async function getCached(url: string): Promise<CacheData | null> {
 
 export async function setCached(
   url: string,
-  data: CacheData,
+  data: Omit<CachedResult, "shareId">,
   ttlSeconds: number,
-): Promise<void> {
-  await redis.set(cacheKey(url), data, { ex: ttlSeconds });
+): Promise<string> {
+  const shareId = randomBytes(4).toString("hex");
+  const cachedResult: CachedResult = {
+    ...data,
+    shareId,
+  };
+
+  await redis.set(cacheKey(url), cachedResult, { ex: ttlSeconds });
+  await redis.set(`share:${shareId}`, cachedResult, { ex: ttlSeconds });
+
+  return shareId;
+}
+
+export async function getByShareId(shareId: string): Promise<CachedResult | null> {
+  const cached = await redis.get<CachedResult | NegativeCacheData>(`share:${shareId}`);
+
+  if (
+    !cached ||
+    "error" in cached ||
+    typeof cached.title !== "string" ||
+    typeof cached.signal_density !== "number" ||
+    !Array.isArray(cached.insights) ||
+    typeof cached.full_minutes !== "number" ||
+    typeof cached.minutes_saved !== "number" ||
+    typeof cached.shareId !== "string"
+  ) {
+    return null;
+  }
+
+  return cached;
 }
 
 export async function acquireLock(url: string): Promise<boolean> {

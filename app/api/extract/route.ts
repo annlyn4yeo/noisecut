@@ -25,6 +25,7 @@ type CachedExtract = {
   insights: string[];
   full_minutes: number;
   minutes_saved: number;
+  shareId: string;
 };
 
 function jsonResponse(body: unknown, status = 200): Response {
@@ -180,7 +181,7 @@ export async function POST(request: Request): Promise<Response> {
           (fullMinutes - signalMinutes).toFixed(1),
         );
 
-        await setCached(
+        const shareId = await setCached(
           normalizedUrl,
           {
             title: article.title,
@@ -197,6 +198,7 @@ export async function POST(request: Request): Promise<Response> {
           signal_density,
           full_minutes: fullMinutes,
           minutes_saved: minutesSaved,
+          share_id: shareId,
         });
       } catch (error) {
         await setNegativeCache(normalizedUrl);

@@ -1,6 +1,9 @@
 "use client";
 
-import { ChangeEvent, FormEvent, memo } from "react";
+import { ChangeEvent, FormEvent, memo, useEffect, useState } from "react";
+
+const DEFAULT_HELPER_TEXT =
+  "extracts only the highest-signal lines and caches the result.";
 
 type HeroInputProps = {
   url: string;
@@ -8,6 +11,7 @@ type HeroInputProps = {
   onUrlChange: (value: string) => void;
   loading: boolean;
   error: string;
+  errorKey: number;
 };
 
 function HeroInputComponent({
@@ -16,7 +20,47 @@ function HeroInputComponent({
   onUrlChange,
   loading,
   error,
+  errorKey,
 }: HeroInputProps) {
+  const [helperText, setHelperText] = useState(DEFAULT_HELPER_TEXT);
+  const [helperClassName, setHelperClassName] = useState("text-[#bbb]");
+  const [helperAnimationClass, setHelperAnimationClass] = useState("");
+
+  useEffect(() => {
+    if (!error) {
+      return;
+    }
+
+    setHelperAnimationClass("animate-helper-rotate-out");
+
+    const showErrorTimeoutId = window.setTimeout(() => {
+      setHelperText(error);
+      setHelperClassName("text-signal");
+      setHelperAnimationClass("animate-helper-rotate-in");
+    }, 180);
+
+    const hideErrorTimeoutId = window.setTimeout(() => {
+      setHelperAnimationClass("animate-helper-rotate-out");
+    }, 1180);
+
+    const restoreHelperTimeoutId = window.setTimeout(() => {
+      setHelperText(DEFAULT_HELPER_TEXT);
+      setHelperClassName("text-[#bbb]");
+      setHelperAnimationClass("animate-helper-rotate-in");
+    }, 1360);
+
+    const clearAnimationTimeoutId = window.setTimeout(() => {
+      setHelperAnimationClass("");
+    }, 1720);
+
+    return () => {
+      window.clearTimeout(showErrorTimeoutId);
+      window.clearTimeout(hideErrorTimeoutId);
+      window.clearTimeout(restoreHelperTimeoutId);
+      window.clearTimeout(clearAnimationTimeoutId);
+    };
+  }, [error, errorKey]);
+
   function handleChange(event: ChangeEvent<HTMLInputElement>) {
     onUrlChange(event.target.value);
   }
@@ -28,9 +72,6 @@ function HeroInputComponent({
 
   return (
     <section className="pt-10">
-      <p className="font-mono text-[11px] uppercase tracking-[0.32em] text-[#aaa]">
-        article intelligence
-      </p>
       <h1 className="mb-12 mt-16 font-playfair text-[42px] leading-tight text-ink">
         Read less. <span className="italic text-signal">Know more.</span>
       </h1>
@@ -56,12 +97,15 @@ function HeroInputComponent({
             Extract signal →
           </button>
         </div>
-        <p className="mt-3 font-mono text-[11px] text-[#bbb]">
-          extracts only the highest-signal lines and caches the result.
+        <p
+          className={[
+            "mt-3 origin-center font-mono text-[11px] transition-colors duration-200",
+            helperClassName,
+            helperAnimationClass,
+          ].join(" ")}
+        >
+          {helperText}
         </p>
-        {error ? (
-          <p className="mt-3 font-mono text-[12px] text-signal">{error}</p>
-        ) : null}
       </form>
     </section>
   );

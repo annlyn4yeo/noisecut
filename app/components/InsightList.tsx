@@ -1,4 +1,6 @@
-import { memo } from "react";
+"use client";
+
+import { memo, useCallback, useState } from "react";
 
 import { InsightCard } from "./InsightCard";
 
@@ -8,6 +10,8 @@ type InsightListProps = {
   density: number | null;
   minutesSaved: number | null;
   fullMinutes: number | null;
+  shareId: string | null;
+  done: boolean;
 };
 
 function InsightListComponent({
@@ -16,7 +20,23 @@ function InsightListComponent({
   density,
   minutesSaved,
   fullMinutes,
+  shareId,
+  done,
 }: InsightListProps) {
+  const [copyLinkLabel, setCopyLinkLabel] = useState("share these insights");
+
+  const handleCopyLink = useCallback(async () => {
+    if (!shareId) {
+      return;
+    }
+
+    await navigator.clipboard.writeText(`${window.location.origin}/r/${shareId}`);
+    setCopyLinkLabel("link copied ✓");
+    window.setTimeout(() => {
+      setCopyLinkLabel("share these insights");
+    }, 2000);
+  }, [shareId]);
+
   return (
     <section
       className={[
@@ -50,9 +70,60 @@ function InsightListComponent({
             key={`${index}-${insight.slice(0, 24)}`}
             text={insight}
             index={index}
+            shareId={shareId}
           />
         ))}
       </div>
+
+      {shareId !== null && done === true ? (
+        <div
+          className="animate-insight-in mt-4 border-t border-[#ede9e1] pt-8 text-center opacity-0"
+          style={{ animationDelay: "400ms" }}
+        >
+          <div className="font-playfair text-[20px] text-ink">
+            {insights.length} <span className="italic text-[#1660F5]">signals</span>{" "}
+            from a {fullMinutes} min read
+          </div>
+          <div className="mt-2 font-mono text-[11px] text-[#aaa]">
+            signal density {Math.round((density ?? 0) * 100)}%
+          </div>
+          <button
+            type="button"
+            onClick={handleCopyLink}
+            className="mx-auto mt-4 flex items-center gap-2 rounded-[4px] bg-[#1660F5] px-5 py-2.5 font-mono text-[12px] text-white"
+          >
+            <svg
+              className="h-3.5 w-3.5"
+              viewBox="0 0 16 16"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M6.5 4.5h-2a2 2 0 0 0-2 2v5a2 2 0 0 0 2 2h5a2 2 0 0 0 2-2v-2"
+                stroke="currentColor"
+                strokeWidth="1.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+              <path
+                d="M9 3.5h3.5V7"
+                stroke="currentColor"
+                strokeWidth="1.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+              <path
+                d="M12.5 3.5 7 9"
+                stroke="currentColor"
+                strokeWidth="1.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            </svg>
+            {copyLinkLabel}
+          </button>
+        </div>
+      ) : null}
     </section>
   );
 }

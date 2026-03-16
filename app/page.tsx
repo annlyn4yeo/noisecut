@@ -15,6 +15,7 @@ type StreamEvent =
       signal_density: number;
       full_minutes: number;
       minutes_saved: number;
+      share_id: string;
     }
   | {
       type: "cached";
@@ -23,6 +24,7 @@ type StreamEvent =
       insights: string[];
       full_minutes: number;
       minutes_saved: number;
+      shareId: string;
     }
   | { type: "error"; message: string };
 
@@ -34,7 +36,9 @@ function PageShell() {
   const [density, setDensity] = useState<number | null>(null);
   const [minutesSaved, setMinutesSaved] = useState<number | null>(null);
   const [fullMinutes, setFullMinutes] = useState<number | null>(null);
+  const [shareId, setShareId] = useState<string | null>(null);
   const [error, setError] = useState("");
+  const [errorKey, setErrorKey] = useState(0);
   const [loading, setLoading] = useState(false);
   const [pipelineMeta, setPipelineMeta] = useState<PipelineMeta>({});
   const [cachedHit, setCachedHit] = useState(false);
@@ -43,11 +47,16 @@ function PageShell() {
     setUrl(value);
   }, []);
 
+  const reportError = useCallback((message: string) => {
+    setError(message);
+    setErrorKey((current) => current + 1);
+  }, []);
+
   const handleSubmit = useCallback(async () => {
     const normalizedUrl = url.trim();
 
     if (!normalizedUrl) {
-      setError("Enter a valid article URL.");
+      reportError("Enter a valid article URL.");
       return;
     }
 
@@ -62,6 +71,7 @@ function PageShell() {
     setDensity(null);
     setMinutesSaved(null);
     setFullMinutes(null);
+    setShareId(null);
     setCachedHit(false);
     setLoading(true);
     setStage(1);
@@ -94,6 +104,7 @@ function PageShell() {
           setDensity(payload.signal_density);
           setMinutesSaved(payload.minutes_saved);
           setFullMinutes(payload.full_minutes);
+          setShareId(payload.shareId);
           setCachedHit(true);
           setStage(5);
           return;
@@ -146,6 +157,7 @@ function PageShell() {
           setDensity(payload.signal_density);
           setMinutesSaved(payload.minutes_saved);
           setFullMinutes(payload.full_minutes);
+          setShareId(payload.share_id);
           setStage(5);
           return;
         }
@@ -186,13 +198,13 @@ function PageShell() {
       const message =
         caughtError instanceof Error ? caughtError.message : "Something went wrong.";
 
-      setError(message);
+      reportError(message);
       setStage(0);
       setCachedHit(false);
     } finally {
       setLoading(false);
     }
-  }, [url]);
+  }, [reportError, url]);
 
   const showPipeline = !cachedHit && stage > 0;
   const showResults = cachedHit || insights.length > 0 || density !== null;
@@ -207,6 +219,7 @@ function PageShell() {
           onUrlChange={handleUrlChange}
           loading={loading}
           error={error}
+          errorKey={errorKey}
         />
       </section>
 
@@ -226,6 +239,8 @@ function PageShell() {
               density={density}
               minutesSaved={minutesSaved}
               fullMinutes={fullMinutes}
+              shareId={shareId}
+              done={stage === 5}
             />
 
             {showGhostInsight ? (

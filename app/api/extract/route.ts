@@ -23,6 +23,7 @@ type CachedExtract = {
   title: string;
   signal_density: number;
   insights: string[];
+  signal_positions: number[];
   full_minutes: number;
   minutes_saved: number;
   shareId: string;
@@ -247,14 +248,18 @@ export async function POST(request: Request): Promise<Response> {
         });
 
         const insights = await collectInsights(sentences);
-        const insightPositions = mapInsightPositions(sentences, insights);
 
-        insights.forEach((insight, index) => {
+        insights.forEach((insight) => {
           streamLine(controller, encoder, {
             type: "insight",
             text: insight,
-            position: insightPositions[index] ?? -1,
           });
+        });
+
+        const insightPositions = mapInsightPositions(sentences, insights);
+        streamLine(controller, encoder, {
+          type: "positions",
+          positions: insightPositions,
         });
 
         const rawSignalDensity =
@@ -276,6 +281,7 @@ export async function POST(request: Request): Promise<Response> {
             title: article.title,
             signal_density,
             insights,
+            signal_positions: insightPositions,
             full_minutes: fullMinutes,
             minutes_saved: minutesSaved,
           },

@@ -1,9 +1,17 @@
 "use client";
 
+import dynamic from "next/dynamic";
 import { memo, useCallback, useMemo, useState } from "react";
 
 import { InsightCard } from "./InsightCard";
-import { SignalDensityModal } from "./SignalDensityModal";
+
+const SignalDensityModal = dynamic(
+  () =>
+    import("./SignalDensityModal").then((module) => module.SignalDensityModal),
+  {
+    ssr: false,
+  },
+);
 
 type InsightListProps = {
   insights: string[];

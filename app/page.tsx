@@ -9,7 +9,8 @@ import { Pipeline, type PipelineMeta } from "./components/Pipeline";
 
 type StreamEvent =
   | { type: "meta"; title: string; total_sentences: number }
-  | { type: "insight"; text: string; position: number }
+  | { type: "insight"; text: string }
+  | { type: "positions"; positions: number[] }
   | {
       type: "done";
       signal_density: number;
@@ -22,6 +23,7 @@ type StreamEvent =
       title: string;
       signal_density: number;
       insights: string[];
+      signal_positions: number[];
       full_minutes: number;
       minutes_saved: number;
       shareId: string;
@@ -66,7 +68,6 @@ function PageShell() {
     let firstInsightSeen = false;
     let totalSentences = 0;
     let filteredCount = 0;
-    let streamedInsightCount = 0;
 
     setError("");
     setTitle("");
@@ -107,6 +108,7 @@ function PageShell() {
           setTitle(payload.title);
           setInsights(payload.insights);
           setDensity(payload.signal_density);
+          setSignalPositions(payload.signal_positions);
           setMinutesSaved(payload.minutes_saved);
           setFullMinutes(payload.full_minutes);
           setShareId(payload.shareId);
@@ -160,9 +162,12 @@ function PageShell() {
             setStage(4);
           }
 
-          streamedInsightCount += 1;
           setInsights((previous) => [...previous, payload.text]);
-          setSignalPositions((previous) => [...previous, payload.position]);
+          return;
+        }
+
+        if (payload.type === "positions") {
+          setSignalPositions(payload.positions);
           return;
         }
 

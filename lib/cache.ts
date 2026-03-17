@@ -6,6 +6,7 @@ export type CachedResult = {
   title: string;
   signal_density: number;
   insights: string[];
+  signal_positions: number[];
   full_minutes: number;
   minutes_saved: number;
   shareId: string;
@@ -56,6 +57,8 @@ export async function getCached(url: string): Promise<CachedResult | null> {
     typeof cached.title !== "string" ||
     typeof cached.signal_density !== "number" ||
     !Array.isArray(cached.insights) ||
+    !Array.isArray(cached.signal_positions) ||
+    !cached.signal_positions.every((position) => typeof position === "number") ||
     typeof cached.full_minutes !== "number" ||
     typeof cached.minutes_saved !== "number" ||
     typeof cached.shareId !== "string"
@@ -96,6 +99,8 @@ export async function getByShareId(
     typeof cached.title !== "string" ||
     typeof cached.signal_density !== "number" ||
     !Array.isArray(cached.insights) ||
+    !Array.isArray(cached.signal_positions) ||
+    !cached.signal_positions.every((position) => typeof position === "number") ||
     typeof cached.full_minutes !== "number" ||
     typeof cached.minutes_saved !== "number" ||
     typeof cached.shareId !== "string"

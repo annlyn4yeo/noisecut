@@ -1,11 +1,6 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  serverExternalPackages: ["jsdom", "@mozilla/readability", "canvas"],
-  experimental: {
-    turbo: {
-      resolveExtensions: [".tsx", ".ts", ".jsx", ".js"],
-    },
-  },
+  serverExternalPackages: ["jsdom", "@mozilla/readability"],
 };
 
 export default nextConfig;

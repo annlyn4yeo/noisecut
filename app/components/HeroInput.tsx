@@ -23,7 +23,7 @@ function HeroInputComponent({
   errorKey,
 }: HeroInputProps) {
   const [helperText, setHelperText] = useState(DEFAULT_HELPER_TEXT);
-  const [helperClassName, setHelperClassName] = useState("text-[#bbb]");
+  const [helperClassName, setHelperClassName] = useState("text-[var(--ink-muted)]");
   const [helperAnimationClass, setHelperAnimationClass] = useState("");
 
   useEffect(() => {
@@ -35,7 +35,7 @@ function HeroInputComponent({
 
     const showErrorTimeoutId = window.setTimeout(() => {
       setHelperText(error);
-      setHelperClassName("text-signal");
+      setHelperClassName("text-[var(--accent)]");
       setHelperAnimationClass("animate-helper-rotate-in");
     }, 180);
 
@@ -45,7 +45,7 @@ function HeroInputComponent({
 
     const restoreHelperTimeoutId = window.setTimeout(() => {
       setHelperText(DEFAULT_HELPER_TEXT);
-      setHelperClassName("text-[#bbb]");
+      setHelperClassName("text-[var(--ink-muted)]");
       setHelperAnimationClass("animate-helper-rotate-in");
     }, 1360);
 
@@ -72,27 +72,27 @@ function HeroInputComponent({
 
   return (
     <section className="pt-10">
-      <h1 className="mb-12 mt-16 font-playfair text-[42px] leading-tight text-ink">
-        Read less. <span className="italic text-signal">Know more.</span>
+      <h1 className="mb-12 mt-16 font-playfair text-[42px] leading-tight text-[var(--ink)]">
+        Read less. <span className="italic text-[var(--accent)]">Know more.</span>
       </h1>
-      <p className="max-w-[540px] font-sans text-[16px] font-light leading-8 text-[#888]">
+      <p className="max-w-[540px] font-sans text-[16px] font-light leading-8 text-[var(--ink-muted)]">
         Paste a long article and extract only the sentences with signal:
         statistics, claims, insights, and facts worth keeping.
       </p>
 
       <form onSubmit={handleSubmit} className="pt-14">
-        <div className="flex w-full overflow-hidden rounded-[4px] border border-ink/15 bg-white/40">
+        <div className="flex w-full overflow-hidden rounded-[4px] border border-[var(--input-border)] bg-[var(--input-bg)]">
           <input
             type="url"
             value={url}
             onChange={handleChange}
             placeholder="paste an article url..."
-            className="min-w-0 flex-1 bg-transparent px-5 py-4 font-mono text-[13px] text-ink outline-none placeholder:text-[#b7b0a6]"
+            className="min-w-0 flex-1 bg-transparent px-5 py-4 font-mono text-[13px] text-[var(--ink)] outline-none placeholder:text-[var(--ink-muted)]"
           />
           <button
             type="submit"
             disabled={loading}
-            className="bg-signal px-6 py-4 font-sans text-[14px] font-medium text-white transition-opacity duration-200 hover:opacity-90 disabled:cursor-wait disabled:opacity-80"
+            className="bg-[var(--accent)] px-6 py-4 font-sans text-[14px] font-medium text-white transition-opacity duration-200 hover:opacity-90 disabled:cursor-wait disabled:opacity-80"
           >
             Extract signal →
           </button>

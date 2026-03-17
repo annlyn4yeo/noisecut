@@ -38,19 +38,19 @@ export default async function SharedResultPage({ params }: SharedPageProps) {
 
   if (!result) {
     return (
-      <main className="min-h-screen bg-[#FAF8F4] text-ink">
+      <main className="min-h-screen bg-[var(--bg)] text-[var(--ink)]">
         <NavBar />
         <div className="mx-auto flex min-h-[70vh] max-w-[600px] items-center justify-center px-7">
           <div className="text-center">
-            <h1 className="font-playfair text-[34px] italic text-ink">
+            <h1 className="font-playfair text-[34px] italic text-[var(--ink)]">
               This signal has expired.
             </h1>
-            <p className="mt-4 font-mono text-[11px] uppercase tracking-[0.18em] text-[#888]">
+            <p className="mt-4 font-mono text-[11px] uppercase tracking-[0.18em] text-[var(--ink-muted)]">
               results are cached for 24 hours
             </p>
             <Link
               href="/"
-              className="mt-6 inline-block font-mono text-[12px] text-signal"
+              className="mt-6 inline-block font-mono text-[12px] text-[var(--accent)]"
             >
               return to noisecut
             </Link>
@@ -61,28 +61,28 @@ export default async function SharedResultPage({ params }: SharedPageProps) {
   }
 
   return (
-    <main className="min-h-screen bg-[#FAF8F4] text-ink">
+    <main className="min-h-screen bg-[var(--bg)] text-[var(--ink)]">
       <NavBar />
       <div className="mx-auto max-w-[600px] px-7 pb-24">
         <section className="pt-16">
           <div className="space-y-3">
-            <h1 className="font-playfair text-[26px] italic leading-tight text-[#888]">
+            <h1 className="font-playfair text-[26px] italic leading-tight text-[var(--ink-muted)]">
               {result.title}
             </h1>
             <div className="flex flex-wrap items-center justify-between gap-3">
-              <span className="font-mono text-[11px] text-[#aaa]">
+              <span className="font-mono text-[11px] text-[var(--ink-muted)]">
                 ~{result.full_minutes} min read&nbsp;
-                <span className="text-[#1660F5]">
+                <span className="text-[var(--accent)]">
                   {result.minutes_saved} min saved
                 </span>
               </span>
-              <div className="shrink-0 rounded-full bg-signal px-3 py-1 font-mono text-[11px] uppercase tracking-[0.18em] text-white">
+              <div className="shrink-0 rounded-full bg-[var(--accent)] px-3 py-1 font-mono text-[11px] uppercase tracking-[0.18em] text-white">
                 {Math.round(result.signal_density * 100)}% signal
               </div>
             </div>
           </div>
 
-          <hr className="mt-5 border-0 border-t-[1.5px] border-ink" />
+          <hr className="mt-5 border-0 border-t-[1.5px] border-[var(--ink)]" />
 
           <div>
             {result.insights.map((insight, index) => (
@@ -95,9 +95,9 @@ export default async function SharedResultPage({ params }: SharedPageProps) {
             ))}
           </div>
 
-          <p className="mt-12 font-mono text-[11px] text-[#bbb]">
+          <p className="mt-12 font-mono text-[11px] text-[var(--ink-muted)]">
             extracted by noisecut{" "}
-            <Link href="/" className="text-signal">
+            <Link href="/" className="text-[var(--accent)]">
               /
             </Link>
           </p>

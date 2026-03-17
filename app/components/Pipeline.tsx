@@ -21,7 +21,7 @@ const STEP_LABELS = [
 
 function CheckIcon() {
   return (
-    <span className="flex h-5 w-5 items-center justify-center rounded-full bg-signal transition-opacity duration-300">
+    <span className="flex h-5 w-5 items-center justify-center rounded-full bg-[var(--accent)] transition-opacity duration-300">
       <svg
         className="h-3 w-3 text-white"
         viewBox="0 0 16 16"
@@ -42,12 +42,12 @@ function CheckIcon() {
 
 function ActiveIcon() {
   return (
-    <span className="h-5 w-5 rounded-full border-2 border-[#e0dbd2] border-t-signal animate-spin" />
+    <span className="h-5 w-5 rounded-full border-2 border-[var(--divider)] border-t-[var(--accent)] animate-spin" />
   );
 }
 
 function IdleIcon() {
-  return <span className="h-5 w-5 rounded-full border border-[#ddd]" />;
+  return <span className="h-5 w-5 rounded-full border border-[var(--divider)]" />;
 }
 
 function formatMeta(index: number, meta: PipelineMeta, stage: number): string {
@@ -105,21 +105,24 @@ function PipelineComponent({ stage, meta }: PipelineProps) {
         const state = getStepState(index, stage);
 
         return (
-          <div key={label} className="flex items-center gap-4 border-b border-faint py-4">
+          <div
+            key={label}
+            className="flex items-center gap-4 border-b border-[var(--divider)] py-4"
+          >
             {state === "done" ? <CheckIcon /> : state === "active" ? <ActiveIcon /> : <IdleIcon />}
             <span
               className={[
                 "font-mono text-[13px] transition-all duration-300",
                 state === "done"
-                  ? "text-[#bbb] line-through"
+                  ? "text-[var(--ink-muted)] line-through"
                   : state === "active"
-                    ? "font-medium text-ink"
-                    : "text-[#ccc]",
+                    ? "font-medium text-[var(--ink)]"
+                    : "text-[var(--ink-muted)]",
               ].join(" ")}
             >
               {label}
             </span>
-            <span className="ml-auto font-mono text-[11px] text-[#bbb]">
+            <span className="ml-auto font-mono text-[11px] text-[var(--ink-muted)]">
               {formatMeta(index, meta, stage)}
             </span>
           </div>

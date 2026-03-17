@@ -3,19 +3,49 @@
 @tailwind utilities;
 
 :root {
-  --background: #faf8f4;
-  --foreground: #171717;
+  --bg: #faf8f4;
+  --surface: #ffffff;
+  --ink: #1a1a1a;
+  --ink-muted: #888;
+  --divider: #ede9e1;
+  --faint: #f5f2ed;
+  --accent: #1660f5;
+  --input-bg: #ffffff;
+  --input-border: #1a1a1a;
+}
+
+[data-theme="dark"] {
+  --bg: #111010;
+  --surface: #1a1a1a;
+  --ink: #f0ede8;
+  --ink-muted: #666;
+  --divider: #2a2a2a;
+  --faint: #1f1f1f;
+  --accent: #4d8eff;
+  --input-bg: #161616;
+  --input-border: #333;
 }
 
 body {
-  color: var(--foreground);
-  background: var(--background);
+  color: var(--ink);
+  background: var(--bg);
   font-family: var(--font-inter), sans-serif;
 }
 
 ::selection {
   background: #f5ab16;
-  color: #171717;
+  color: var(--ink);
+}
+
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation: none;
+  mix-blend-mode: normal;
+}
+
+::view-transition-new(root) {
+  animation: reveal 0.4s ease-in forwards;
+  clip-path: circle(0% at var(--reveal-x, 50%) var(--reveal-y, 50%));
 }
 
 @keyframes insightFadeUp {
@@ -63,6 +93,12 @@ body {
   to {
     opacity: 0.08;
     transform: perspective(500px) rotateX(70deg);
+  }
+}
+
+@keyframes reveal {
+  to {
+    clip-path: circle(150% at var(--reveal-x, 50%) var(--reveal-y, 50%));
   }
 }
 

@@ -226,7 +226,7 @@ function PageShell() {
       <div className="space-y-10">
         {showPipeline ? (
           <section>
-            <hr className="my-12 border-0 border-t-2 border-ink/10" />
+            <hr className="my-12 border-0 border-t-2 border-[var(--divider)]" />
             <Pipeline stage={stage} meta={pipelineMeta} />
           </section>
         ) : null}
@@ -244,11 +244,11 @@ function PageShell() {
             />
 
             {showGhostInsight ? (
-              <div className="flex gap-4 border-b border-faint py-5">
-                <div className="min-w-[18px] pt-[2px] font-playfair text-[13px] italic text-ink/20">
+              <div className="flex gap-4 border-b border-[var(--divider)] py-5">
+                <div className="min-w-[18px] pt-[2px] font-playfair text-[13px] italic text-[color:color-mix(in_srgb,var(--ink)_20%,transparent)]">
                   {insights.length + 1}
                 </div>
-                <div className="font-mono text-[12px] italic text-[#ccc]">
+                <div className="font-mono text-[12px] italic text-[var(--ink-muted)]">
                   reading...
                 </div>
               </div>
@@ -262,7 +262,7 @@ function PageShell() {
 
 export default function HomePage() {
   return (
-    <main className="min-h-screen bg-[#FAF8F4] text-ink">
+    <main className="min-h-screen bg-[var(--bg)] text-[var(--ink)]">
       <NavBar />
       <PageShell />
     </main>

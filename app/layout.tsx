@@ -29,7 +29,15 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
+      <head>
+        <script
+          dangerouslySetInnerHTML={{
+            __html:
+              `(function(){var t=localStorage.getItem('noisecut-theme');if(t)document.documentElement.setAttribute('data-theme',t)})()`,
+          }}
+        />
+      </head>
       <body
         className={`${playfair.variable} ${inter.variable} ${jetbrainsMono.variable} antialiased`}
       >

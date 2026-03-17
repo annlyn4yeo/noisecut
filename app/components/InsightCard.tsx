@@ -25,13 +25,13 @@ function InsightCardComponent({ text, index, shareId }: InsightCardProps) {
 
   return (
     <div
-      className="group animate-insight-in flex gap-4 border-b border-faint py-5 opacity-0"
+      className="group animate-insight-in flex gap-4 border-b border-[var(--divider)] py-5 opacity-0"
       style={{ animationDelay: `${index * 100}ms` }}
     >
-      <div className="min-w-[18px] pt-[2px] font-playfair text-[13px] italic tabular-nums text-ink/20">
+      <div className="min-w-[18px] pt-[2px] font-playfair text-[13px] italic tabular-nums text-[color:color-mix(in_srgb,var(--ink)_20%,transparent)]">
         {index + 1}
       </div>
-      <div className="flex-1 font-playfair text-[16px] leading-relaxed text-ink">
+      <div className="flex-1 font-playfair text-[16px] leading-relaxed text-[var(--ink)]">
         {text}
       </div>
       {shareId !== null ? (

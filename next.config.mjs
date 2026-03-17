@@ -1,6 +1,6 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  serverExternalPackages: ["jsdom", "@mozilla/readability", "canvas"],
+  serverExternalPackages: ["canvas"],
 };
 
 export default nextConfig;

@@ -1,5 +1,3 @@
-import { Readability } from "@mozilla/readability";
-import { JSDOM } from "jsdom";
 import nlp from "compromise";
 
 const REQUEST_TIMEOUT_MS = 5_000;
@@ -118,6 +116,10 @@ export async function extractArticle(url: string): Promise<{
   }
 
   try {
+    const [{ Readability }, { JSDOM }] = await Promise.all([
+      import("@mozilla/readability"),
+      import("jsdom"),
+    ]);
     const dom = new JSDOM(html, { url: parsedUrl.toString() });
     const article = new Readability(dom.window.document).parse();
 

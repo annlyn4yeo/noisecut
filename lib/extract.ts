@@ -26,7 +26,9 @@ function isLikelySentenceStart(chunk: string): boolean {
 }
 
 function cleanLeadingMetadata(text: string): string {
-  let normalizedText = normalizeLeadingSpacing(text.replace(/\r\n/g, "\n")).trim();
+  let normalizedText = normalizeLeadingSpacing(
+    text.replace(/\r\n/g, "\n"),
+  ).trim();
 
   if (!normalizedText) {
     return "";
@@ -36,9 +38,15 @@ function cleanLeadingMetadata(text: string): string {
 
   do {
     previousValue = normalizedText;
-    normalizedText = normalizedText.replace(LEADING_TIMESTAMP_PATTERN, "").trimStart();
-    normalizedText = normalizedText.replace(LEADING_BYLINE_PATTERN, "").trimStart();
-    normalizedText = normalizedText.replace(LEADING_CREDIT_PATTERN, "").trimStart();
+    normalizedText = normalizedText
+      .replace(LEADING_TIMESTAMP_PATTERN, "")
+      .trimStart();
+    normalizedText = normalizedText
+      .replace(LEADING_BYLINE_PATTERN, "")
+      .trimStart();
+    normalizedText = normalizedText
+      .replace(LEADING_CREDIT_PATTERN, "")
+      .trimStart();
   } while (normalizedText !== previousValue);
 
   const chunks = normalizedText
@@ -46,7 +54,9 @@ function cleanLeadingMetadata(text: string): string {
     .map((chunk) => chunk.trim())
     .filter(Boolean);
 
-  const firstContentChunkIndex = chunks.findIndex((chunk) => isLikelySentenceStart(chunk));
+  const firstContentChunkIndex = chunks.findIndex((chunk) =>
+    isLikelySentenceStart(chunk),
+  );
 
   if (firstContentChunkIndex <= 0) {
     return normalizedText;
@@ -77,14 +87,17 @@ export async function extractArticle(url: string): Promise<{
     const response = await fetch(parsedUrl, {
       headers: {
         "user-agent": USER_AGENT,
-        accept: "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+        accept:
+          "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
       },
       redirect: "follow",
       signal: controller.signal,
     });
 
     if (!response.ok) {
-      throw new Error(`received HTTP ${response.status} ${response.statusText}`);
+      throw new Error(
+        `received HTTP ${response.status} ${response.statusText}`,
+      );
     }
 
     html = await response.text();
@@ -95,8 +108,11 @@ export async function extractArticle(url: string): Promise<{
       );
     }
 
-    const message = error instanceof Error ? error.message : "unknown fetch error";
-    throw new Error(`Failed to fetch article from "${parsedUrl.toString()}": ${message}.`);
+    const message =
+      error instanceof Error ? error.message : "unknown fetch error";
+    throw new Error(
+      `Failed to fetch article from "${parsedUrl.toString()}": ${message}.`,
+    );
   } finally {
     clearTimeout(timeout);
   }
@@ -106,7 +122,9 @@ export async function extractArticle(url: string): Promise<{
     const article = new Readability(dom.window.document).parse();
 
     if (!article) {
-      throw new Error("Readability could not identify a main article in the document");
+      throw new Error(
+        "Readability could not identify a main article in the document",
+      );
     }
 
     if (!article.title?.trim() || !article.textContent?.trim()) {
@@ -119,8 +137,11 @@ export async function extractArticle(url: string): Promise<{
       excerpt: article.excerpt?.trim() ?? "",
     };
   } catch (error) {
-    const message = error instanceof Error ? error.message : "unknown parse error";
-    throw new Error(`Failed to parse article from "${parsedUrl.toString()}": ${message}.`);
+    const message =
+      error instanceof Error ? error.message : "unknown parse error";
+    throw new Error(
+      `Failed to parse article from "${parsedUrl.toString()}": ${message}.`,
+    );
   }
 }
 

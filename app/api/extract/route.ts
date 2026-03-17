@@ -92,10 +92,16 @@ export async function POST(request: Request): Promise<Response> {
     return jsonResponse({ error: "Invalid JSON request body." }, 400);
   }
 
-  const url = typeof body === "object" && body !== null ? (body as { url?: unknown }).url : null;
+  const url =
+    typeof body === "object" && body !== null
+      ? (body as { url?: unknown }).url
+      : null;
 
   if (typeof url !== "string" || !url.trim()) {
-    return jsonResponse({ error: 'Request body must include a non-empty "url" string.' }, 400);
+    return jsonResponse(
+      { error: 'Request body must include a non-empty "url" string.' },
+      400,
+    );
   }
 
   const normalizedUrl = url.trim();
@@ -119,7 +125,10 @@ export async function POST(request: Request): Promise<Response> {
       return jsonResponse({ type: "cached", ...awaitedCached });
     }
 
-    return jsonResponse({ error: "Timed out waiting for existing extraction." }, 409);
+    return jsonResponse(
+      { error: "Timed out waiting for existing extraction." },
+      409,
+    );
   }
 
   const cachedAfterLock = await getCached(normalizedUrl);
@@ -137,17 +146,23 @@ export async function POST(request: Request): Promise<Response> {
     await setNegativeCache(normalizedUrl);
     await releaseLock(normalizedUrl);
 
-    const message = error instanceof Error ? error.message : "Failed to extract article.";
+    const message =
+      error instanceof Error ? error.message : "Failed to extract article.";
     return jsonResponse({ error: message }, 400);
   }
 
   if (countWords(article.textContent) < MIN_WORD_COUNT) {
     await setNegativeCache(normalizedUrl);
     await releaseLock(normalizedUrl);
-    return jsonResponse({ error: "Article content is too short to process." }, 400);
+    return jsonResponse(
+      { error: "Article content is too short to process." },
+      400,
+    );
   }
 
-  const filteredSentences = filterSentences(segmentSentences(article.textContent));
+  const filteredSentences = filterSentences(
+    segmentSentences(article.textContent),
+  );
   const sentences = filteredSentences.slice(0, MAX_SENTENCES);
   const totalSentences = sentences.length;
 

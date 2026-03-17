@@ -1,6 +1,12 @@
 "use client";
 
-import { type MouseEvent, memo, useLayoutEffect, useState } from "react";
+import {
+  type MouseEvent,
+  memo,
+  useEffect,
+  useLayoutEffect,
+  useState,
+} from "react";
 
 type Theme = "light" | "dark";
 
@@ -9,6 +15,7 @@ type DocumentWithTransition = Document & {
 };
 
 function ThemeToggleComponent() {
+  const [mounted, setMounted] = useState(false);
   const [theme, setTheme] = useState<Theme>("light");
 
   useLayoutEffect(() => {
@@ -17,6 +24,10 @@ function ThemeToggleComponent() {
 
     document.documentElement.setAttribute("data-theme", nextTheme);
     setTheme(nextTheme);
+  }, []);
+
+  useEffect(() => {
+    setMounted(true);
   }, []);
 
   function applyTheme(nextTheme: Theme) {
@@ -39,6 +50,15 @@ function ThemeToggleComponent() {
     }
 
     documentWithTransition.startViewTransition(() => applyTheme(nextTheme));
+  }
+
+  if (!mounted) {
+    return (
+      <div
+        aria-hidden="true"
+        className="h-8 w-[58px] rounded-full border border-[var(--divider)] bg-[var(--surface)]"
+      />
+    );
   }
 
   return (

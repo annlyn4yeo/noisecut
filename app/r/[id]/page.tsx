@@ -6,15 +6,16 @@ import { NavBar } from "@/app/components/NavBar";
 import { getByShareId } from "@/lib/cache";
 
 type SharedPageProps = {
-  params: {
+  params: Promise<{
     id: string;
-  };
+  }>;
 };
 
 export async function generateMetadata({
   params,
 }: SharedPageProps): Promise<Metadata> {
-  const result = await getByShareId(params.id);
+  const { id } = await params;
+  const result = await getByShareId(id);
 
   if (!result) {
     return {
@@ -34,7 +35,8 @@ export async function generateMetadata({
 }
 
 export default async function SharedResultPage({ params }: SharedPageProps) {
-  const result = await getByShareId(params.id);
+  const { id } = await params;
+  const result = await getByShareId(id);
 
   if (!result) {
     return (

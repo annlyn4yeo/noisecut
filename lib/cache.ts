@@ -46,7 +46,9 @@ function negativeCacheKey(url: string): string {
 }
 
 export async function getCached(url: string): Promise<CachedResult | null> {
-  const cached = await redis.get<CachedResult | NegativeCacheData>(cacheKey(url));
+  const cached = await redis.get<CachedResult | NegativeCacheData>(
+    cacheKey(url),
+  );
 
   if (
     !cached ||
@@ -81,8 +83,12 @@ export async function setCached(
   return shareId;
 }
 
-export async function getByShareId(shareId: string): Promise<CachedResult | null> {
-  const cached = await redis.get<CachedResult | NegativeCacheData>(`share:${shareId}`);
+export async function getByShareId(
+  shareId: string,
+): Promise<CachedResult | null> {
+  const cached = await redis.get<CachedResult | NegativeCacheData>(
+    `share:${shareId}`,
+  );
 
   if (
     !cached ||
@@ -114,6 +120,8 @@ export async function setNegativeCache(url: string): Promise<void> {
 }
 
 export async function isNegativelyCached(url: string): Promise<boolean> {
-  const cached = await redis.get<NegativeCacheData | null>(negativeCacheKey(url));
+  const cached = await redis.get<NegativeCacheData | null>(
+    negativeCacheKey(url),
+  );
   return cached?.error === true;
 }

@@ -2,6 +2,9 @@
   "name": "noisecut",
   "version": "0.1.0",
   "private": true,
+  "overrides": {
+    "html-encoding-sniffer": "3.0.0"
+  },
   "scripts": {
     "dev": "next dev",
     "build": "next build",
@@ -15,7 +18,7 @@
     "@upstash/redis": "^1.37.0",
     "cheerio": "^1.2.0",
     "compromise": "^14.15.0",
-    "jsdom": "^24.1.3",
+    "jsdom": "^22.1.0",
     "next": "^16.1.7",
     "react": "^18",
     "react-dom": "^18"

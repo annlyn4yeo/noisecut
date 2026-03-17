@@ -29,8 +29,9 @@ function InsightListComponent({
     if (!shareId) {
       return;
     }
-
-    await navigator.clipboard.writeText(`${window.location.origin}/r/${shareId}`);
+    await navigator.clipboard.writeText(
+      `${window.location.origin}/r/${shareId}`,
+    );
     setCopyLinkLabel("link copied ✓");
     window.setTimeout(() => {
       setCopyLinkLabel("share these insights");
@@ -52,7 +53,9 @@ function InsightListComponent({
           {minutesSaved !== null ? (
             <span className="font-mono text-[11px] text-[var(--ink-muted)] transition-opacity duration-500">
               ~{fullMinutes} min read&nbsp;
-              <span className="text-[var(--accent)]">{minutesSaved} min saved</span>
+              <span className="text-[var(--accent)]">
+                {minutesSaved} min saved
+              </span>
             </span>
           ) : null}
           {density !== null ? (
@@ -77,16 +80,14 @@ function InsightListComponent({
 
       {shareId !== null && done === true ? (
         <div
-          className="animate-insight-in mt-4 border-t border-[var(--divider)] pt-8 text-center opacity-0"
+          className="animate-insight-in mt-4 pt-8 text-center opacity-0"
           style={{ animationDelay: "400ms" }}
         >
           <div className="font-playfair text-[20px] text-[var(--ink)]">
-            {insights.length} <span className="italic text-[var(--accent)]">signals</span>{" "}
-            from a {fullMinutes} min read
-          </div>
-          <div className="mt-2 font-mono text-[11px] text-[var(--ink-muted)]">
-            signal density {Math.round((density ?? 0) * 100)}%
-          </div>
+            {insights.length}{" "}
+            <span className="italic text-[var(--accent)]">signals</span> from a{" "}
+            {fullMinutes} min read
+          </div>{" "}
           <button
             type="button"
             onClick={handleCopyLink}

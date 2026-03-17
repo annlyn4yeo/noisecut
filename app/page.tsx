@@ -9,7 +9,7 @@ import { Pipeline, type PipelineMeta } from "./components/Pipeline";
 
 type StreamEvent =
   | { type: "meta"; title: string; total_sentences: number }
-  | { type: "insight"; text: string }
+  | { type: "insight"; text: string; position: number }
   | {
       type: "done";
       signal_density: number;
@@ -37,6 +37,8 @@ function PageShell() {
   const [minutesSaved, setMinutesSaved] = useState<number | null>(null);
   const [fullMinutes, setFullMinutes] = useState<number | null>(null);
   const [shareId, setShareId] = useState<string | null>(null);
+  const [totalSentences, setTotalSentences] = useState(0);
+  const [signalPositions, setSignalPositions] = useState<number[]>([]);
   const [error, setError] = useState("");
   const [errorKey, setErrorKey] = useState(0);
   const [loading, setLoading] = useState(false);
@@ -64,6 +66,7 @@ function PageShell() {
     let firstInsightSeen = false;
     let totalSentences = 0;
     let filteredCount = 0;
+    let streamedInsightCount = 0;
 
     setError("");
     setTitle("");
@@ -72,6 +75,8 @@ function PageShell() {
     setMinutesSaved(null);
     setFullMinutes(null);
     setShareId(null);
+    setTotalSentences(0);
+    setSignalPositions([]);
     setCachedHit(false);
     setLoading(true);
     setStage(1);
@@ -105,6 +110,11 @@ function PageShell() {
           setMinutesSaved(payload.minutes_saved);
           setFullMinutes(payload.full_minutes);
           setShareId(payload.shareId);
+          setTotalSentences(
+            payload.full_minutes
+              ? Math.round((payload.full_minutes * 238) / 20)
+              : payload.insights.length,
+          );
           setCachedHit(true);
           setStage(5);
           return;
@@ -134,6 +144,7 @@ function PageShell() {
 
           setStage(2);
           setTitle(payload.title);
+          setTotalSentences(payload.total_sentences);
           setPipelineMeta({
             ms: elapsedMs,
             sentences: totalSentences,
@@ -149,7 +160,9 @@ function PageShell() {
             setStage(4);
           }
 
+          streamedInsightCount += 1;
           setInsights((previous) => [...previous, payload.text]);
+          setSignalPositions((previous) => [...previous, payload.position]);
           return;
         }
 
@@ -241,6 +254,8 @@ function PageShell() {
               fullMinutes={fullMinutes}
               shareId={shareId}
               done={stage === 5}
+              totalSentences={totalSentences}
+              signalPositions={signalPositions}
             />
 
             {showGhostInsight ? (

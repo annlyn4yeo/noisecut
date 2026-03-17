@@ -1,8 +1,9 @@
 "use client";
 
-import { memo, useCallback, useState } from "react";
+import { memo, useCallback, useMemo, useState } from "react";
 
 import { InsightCard } from "./InsightCard";
+import { SignalDensityModal } from "./SignalDensityModal";
 
 type InsightListProps = {
   insights: string[];
@@ -12,6 +13,8 @@ type InsightListProps = {
   fullMinutes: number | null;
   shareId: string | null;
   done: boolean;
+  totalSentences: number;
+  signalPositions: number[];
 };
 
 function InsightListComponent({
@@ -22,8 +25,20 @@ function InsightListComponent({
   fullMinutes,
   shareId,
   done,
+  totalSentences,
+  signalPositions,
 }: InsightListProps) {
   const [copyLinkLabel, setCopyLinkLabel] = useState("share these insights");
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const displayedDensity =
+    totalSentences > 0 ? insights.length / totalSentences : density;
+  const displayedPercentage = useMemo(() => {
+    if (displayedDensity === null) {
+      return null;
+    }
+
+    return Math.round(displayedDensity * 100);
+  }, [displayedDensity]);
 
   const handleCopyLink = useCallback(async () => {
     if (!shareId) {
@@ -58,10 +73,15 @@ function InsightListComponent({
               </span>
             </span>
           ) : null}
-          {density !== null ? (
-            <div className="shrink-0 rounded-full bg-[var(--accent)] px-3 py-1 font-mono text-[11px] uppercase tracking-[0.18em] text-white transition-opacity duration-500">
-              {Math.round(density * 100)}% signal
-            </div>
+          {displayedPercentage !== null ? (
+            <button
+              type="button"
+              onClick={() => setIsModalOpen(true)}
+              className="shrink-0 cursor-pointer rounded-full bg-[var(--accent)] px-3 py-1 font-mono text-[11px] uppercase tracking-[0.18em] text-white transition-opacity duration-500"
+            >
+              <span className="mr-2 inline-block h-[5px] w-[5px] animate-pulse rounded-full bg-white/50" />
+              {displayedPercentage}% signal
+            </button>
           ) : null}
         </div>
       </div>
@@ -124,6 +144,17 @@ function InsightListComponent({
             {copyLinkLabel}
           </button>
         </div>
+      ) : null}
+
+      {isModalOpen && signalPositions.length > 0 ? (
+        <SignalDensityModal
+          isOpen={true}
+          onClose={() => setIsModalOpen(false)}
+          title={title}
+          totalSentences={totalSentences}
+          insightCount={insights.length}
+          signalPositions={signalPositions}
+        />
       ) : null}
     </section>
   );

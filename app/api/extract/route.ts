@@ -48,6 +48,10 @@ function getTTL(signalDensity: number): number {
   return 3_600;
 }
 
+function normalizeSentence(text: string): string {
+  return text.replace(/\s+/g, " ").trim();
+}
+
 function streamLine(
   controller: ReadableStreamDefaultController<Uint8Array>,
   encoder: TextEncoder,
@@ -81,6 +85,71 @@ async function collectInsights(sentences: string[]): Promise<string[]> {
   }
 
   return result.value;
+}
+
+function mapInsightPositions(
+  sentences: string[],
+  insights: string[],
+): number[] {
+  const usedIndices = new Set<number>();
+  let lastMatchedIndex = -1;
+
+  return insights.map((insight) => {
+    const normalizedInsight = normalizeSentence(insight);
+    const exactMatchIndex = sentences.findIndex((sentence, index) => {
+      if (usedIndices.has(index)) {
+        return false;
+      }
+
+      return normalizeSentence(sentence) === normalizedInsight;
+    });
+
+    if (exactMatchIndex !== -1) {
+      usedIndices.add(exactMatchIndex);
+      lastMatchedIndex = exactMatchIndex;
+      return exactMatchIndex;
+    }
+
+    const fuzzyMatchIndex = sentences.findIndex((sentence, index) => {
+      if (usedIndices.has(index)) {
+        return false;
+      }
+
+      const normalizedSentence = normalizeSentence(sentence);
+      return (
+        normalizedSentence.includes(normalizedInsight) ||
+        normalizedInsight.includes(normalizedSentence)
+      );
+    });
+
+    if (fuzzyMatchIndex !== -1) {
+      usedIndices.add(fuzzyMatchIndex);
+      lastMatchedIndex = fuzzyMatchIndex;
+      return fuzzyMatchIndex;
+    }
+
+    const nextUnusedIndex = sentences.findIndex(
+      (_, index) => !usedIndices.has(index) && index > lastMatchedIndex,
+    );
+
+    if (nextUnusedIndex !== -1) {
+      usedIndices.add(nextUnusedIndex);
+      lastMatchedIndex = nextUnusedIndex;
+      return nextUnusedIndex;
+    }
+
+    const firstUnusedIndex = sentences.findIndex(
+      (_, index) => !usedIndices.has(index),
+    );
+
+    if (firstUnusedIndex !== -1) {
+      usedIndices.add(firstUnusedIndex);
+      lastMatchedIndex = firstUnusedIndex;
+      return firstUnusedIndex;
+    }
+
+    return Math.max(sentences.length - 1, 0);
+  });
 }
 
 export async function POST(request: Request): Promise<Response> {
@@ -178,10 +247,15 @@ export async function POST(request: Request): Promise<Response> {
         });
 
         const insights = await collectInsights(sentences);
+        const insightPositions = mapInsightPositions(sentences, insights);
 
-        for (const insight of insights) {
-          streamLine(controller, encoder, { type: "insight", text: insight });
-        }
+        insights.forEach((insight, index) => {
+          streamLine(controller, encoder, {
+            type: "insight",
+            text: insight,
+            position: insightPositions[index] ?? -1,
+          });
+        });
 
         const rawSignalDensity =
           totalSentences === 0 ? 0 : insights.length / totalSentences;

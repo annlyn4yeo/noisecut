@@ -129,6 +129,10 @@ body {
     background: rgba(250, 248, 244, 0.85);
   }
 
+  [data-theme="dark"] .modal-backdrop {
+    background: rgba(17, 16, 16, 0.8);
+  }
+
   @supports ((-webkit-backdrop-filter: blur(4px)) or (backdrop-filter: blur(4px))) {
     .modal-backdrop {
       -webkit-backdrop-filter: blur(4px);

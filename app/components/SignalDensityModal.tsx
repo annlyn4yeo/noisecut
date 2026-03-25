@@ -70,7 +70,7 @@ function interpretSignal(signalPositions: number[], totalSentences: number) {
     return {
       prefix: "",
       highlight: "signal is front-loaded",
-      suffix: " — conclusion is mostly filler",
+      suffix: " - conclusion is mostly filler",
     };
   }
 
@@ -78,14 +78,14 @@ function interpretSignal(signalPositions: number[], totalSentences: number) {
     return {
       prefix: "",
       highlight: "signal peaks in the middle third",
-      suffix: " — intro and conclusion are mostly filler",
+      suffix: " - intro and conclusion are mostly filler",
     };
   }
 
   return {
     prefix: "",
     highlight: "signal is buried",
-    suffix: " — article buries the lead",
+    suffix: " - article buries the lead",
   };
 }
 
@@ -163,65 +163,65 @@ function SignalDensityModalComponent({
       onClick={onClose}
     >
       <div
-        className="w-full max-w-[680px] overflow-hidden rounded-lg border-[1.5px] border-[#1a1a1a] bg-white opacity-100 animate-[modalReveal_350ms_cubic-bezier(0.34,1.56,0.64,1)_forwards]"
+        className="w-full max-w-[680px] overflow-hidden rounded-lg border-[1.5px] border-[var(--ink)] bg-[var(--surface)] text-[var(--ink)] shadow-[0_16px_40px_rgba(0,0,0,0.2)] opacity-100 animate-[modalReveal_350ms_cubic-bezier(0.34,1.56,0.64,1)_forwards]"
         onClick={(event) => event.stopPropagation()}
       >
         <div className="relative px-8 py-7">
-          <p className="font-mono text-[10px] uppercase tracking-widest text-[#aaa]">
+          <p className="font-mono text-[10px] uppercase tracking-widest text-[var(--ink-muted)]">
             signal density breakdown
           </p>
-          <h2 className="mt-2 pr-12 font-playfair text-[20px] text-[#1a1a1a]">
-            Where the <span className="italic text-[#1660F5]">signal</span> lives
+          <h2 className="mt-2 pr-12 font-playfair text-[20px] text-[var(--ink)]">
+            Where the <span className="italic text-[var(--accent)]">signal</span> lives
             in this article
           </h2>
           <button
             type="button"
             onClick={onClose}
-            className="absolute right-6 top-5 flex h-7 w-7 items-center justify-center rounded border border-[#ede9e1] font-mono text-[12px] text-[#888]"
+            className="absolute right-6 top-5 flex h-7 w-7 items-center justify-center rounded border border-[var(--divider)] font-mono text-[12px] text-[var(--ink-muted)]"
           >
-            ✕
+            x
           </button>
         </div>
 
-        <div className="grid grid-cols-3 border-y border-[#ede9e1]">
+        <div className="grid grid-cols-3 border-y border-[var(--divider)]">
           <div className="px-4 py-4 text-center">
-            <div className="font-mono text-[10px] uppercase tracking-widest text-[#aaa]">
+            <div className="font-mono text-[10px] uppercase tracking-widest text-[var(--ink-muted)]">
               total sentences
             </div>
-            <div className="mt-2 font-playfair text-[20px] text-[#1a1a1a]">
+            <div className="mt-2 font-playfair text-[20px] text-[var(--ink)]">
               {totalSentences}
             </div>
           </div>
-          <div className="border-x border-[#ede9e1] px-4 py-4 text-center">
-            <div className="font-mono text-[10px] uppercase tracking-widest text-[#aaa]">
+          <div className="border-x border-[var(--divider)] px-4 py-4 text-center">
+            <div className="font-mono text-[10px] uppercase tracking-widest text-[var(--ink-muted)]">
               signal found
             </div>
-            <div className="mt-2 font-playfair text-[20px] italic text-[#1660F5]">
+            <div className="mt-2 font-playfair text-[20px] italic text-[var(--accent)]">
               {insightCount}
             </div>
           </div>
           <div className="px-4 py-4 text-center">
-            <div className="font-mono text-[10px] uppercase tracking-widest text-[#aaa]">
+            <div className="font-mono text-[10px] uppercase tracking-widest text-[var(--ink-muted)]">
               noise removed
             </div>
-            <div className="mt-2 font-playfair text-[20px] text-[#1a1a1a]">
+            <div className="mt-2 font-playfair text-[20px] text-[var(--ink)]">
               {Math.max(totalSentences - insightCount, 0)}
             </div>
           </div>
         </div>
 
-        <div className="border-b border-[#ede9e1] px-8 py-7">
-          <div className="font-mono text-[10px] uppercase tracking-widest text-[#aaa]">
+        <div className="border-b border-[var(--divider)] px-8 py-7">
+          <div className="font-mono text-[10px] uppercase tracking-widest text-[var(--ink-muted)]">
             article signal map
           </div>
 
-          <div className="mt-4 flex h-[120px] items-end gap-[4px] rounded bg-[#f5f2ed] p-[8px]">
+          <div className="mt-4 flex h-[120px] items-end gap-[4px] rounded bg-[var(--faint)] p-[8px]">
             {bars.map((bar, index) => (
               <div
                 key={`${bar.index}-${index}`}
                 className={[
                   "min-w-0 flex-1 origin-bottom rounded-[1px]",
-                  bar.isSignal ? "bg-[#1660F5]" : "bg-[#e0dbd2]",
+                  bar.isSignal ? "bg-[var(--accent)]" : "bg-[var(--divider)]",
                   "animate-[barRise_300ms_ease_forwards]",
                 ].join(" ")}
                 style={{
@@ -233,7 +233,7 @@ function SignalDensityModalComponent({
             ))}
           </div>
 
-          <div className="mt-3 flex justify-between font-mono text-[9px] text-[#bbb]">
+          <div className="mt-3 flex justify-between font-mono text-[9px] text-[var(--ink-muted)]">
             <span>intro</span>
             <span>middle</span>
             <span>end</span>
@@ -241,32 +241,32 @@ function SignalDensityModalComponent({
 
           <div className="mt-4 flex flex-wrap gap-4">
             <div className="flex items-center gap-2">
-              <span className="h-2 w-2 rounded-[1px] bg-[#1660F5]" />
-              <span className="font-mono text-[10px] text-[#888]">
+              <span className="h-2 w-2 rounded-[1px] bg-[var(--accent)]" />
+              <span className="font-mono text-[10px] text-[var(--ink-muted)]">
                 signal sentence
               </span>
             </div>
             <div className="flex items-center gap-2">
-              <span className="h-2 w-2 rounded-[1px] bg-[#e0dbd2]" />
-              <span className="font-mono text-[10px] text-[#888]">
+              <span className="h-2 w-2 rounded-[1px] bg-[var(--divider)]" />
+              <span className="font-mono text-[10px] text-[var(--ink-muted)]">
                 noise removed
               </span>
             </div>
           </div>
         </div>
 
-        <div className="border-b border-[#ede9e1] bg-[#faf8f4] px-[18px] py-3 font-mono text-[11px] text-[#888]">
+        <div className="border-b border-[var(--divider)] bg-[var(--bg)] px-[18px] py-3 font-mono text-[11px] text-[var(--ink-muted)]">
           {interpretation.prefix}
-          <span className="text-[#1660F5]">{interpretation.highlight}</span>
+          <span className="text-[var(--accent)]">{interpretation.highlight}</span>
           {interpretation.suffix}
         </div>
 
         <div className="flex items-center justify-between px-8 py-[14px]">
-          <div className="font-mono text-[10px] text-[#ccc]">esc to close</div>
+          <div className="font-mono text-[10px] text-[var(--ink-muted)]">esc to close</div>
           <button
             type="button"
             onClick={onClose}
-            className="rounded-[3px] bg-[#1a1a1a] px-4 py-2 font-mono text-[11px] text-white"
+            className="rounded-[3px] bg-[var(--ink)] px-4 py-2 font-mono text-[11px] text-[var(--surface)]"
           >
             done
           </button>

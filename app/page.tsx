@@ -26,6 +26,7 @@ type StreamEvent =
       signal_positions: number[];
       full_minutes: number;
       minutes_saved: number;
+      total_sentences: number;
       shareId: string;
     }
   | { type: "error"; message: string };
@@ -112,11 +113,7 @@ function PageShell() {
           setMinutesSaved(payload.minutes_saved);
           setFullMinutes(payload.full_minutes);
           setShareId(payload.shareId);
-          setTotalSentences(
-            payload.full_minutes
-              ? Math.round((payload.full_minutes * 238) / 20)
-              : payload.insights.length,
-          );
+          setTotalSentences(payload.total_sentences);
           setCachedHit(true);
           setStage(5);
           return;

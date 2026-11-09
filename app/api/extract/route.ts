@@ -26,6 +26,7 @@ type CachedExtract = {
   signal_positions: number[];
   full_minutes: number;
   minutes_saved: number;
+  total_sentences: number;
   shareId: string;
 };
 
@@ -174,8 +175,18 @@ export async function POST(request: Request): Promise<Response> {
     );
   }
 
-  const normalizedUrl = url.trim();
+  try {
+    return await handleExtraction(url.trim());
+  } catch (error) {
+    console.error("Extraction request failed:", error);
+    return jsonResponse(
+      { error: "Service temporarily unavailable. Please try again shortly." },
+      503,
+    );
+  }
+}
 
+async function handleExtraction(normalizedUrl: string): Promise<Response> {
   if (await isNegativelyCached(normalizedUrl)) {
     return jsonResponse({ error: "URL is negatively cached." }, 400);
   }
@@ -266,7 +277,7 @@ export async function POST(request: Request): Promise<Response> {
           totalSentences === 0 ? 0 : insights.length / totalSentences;
         const signal_density = Math.round(rawSignalDensity * 100) / 100;
         const fullMinutes = parseFloat(
-          ((totalSentences * AVG_WORDS_PER_SENTENCE) / WPM).toFixed(1),
+          ((filteredSentences.length * AVG_WORDS_PER_SENTENCE) / WPM).toFixed(1),
         );
         const signalMinutes = parseFloat(
           ((insights.length * AVG_WORDS_PER_SENTENCE) / WPM).toFixed(1),
@@ -284,6 +295,7 @@ export async function POST(request: Request): Promise<Response> {
             signal_positions: insightPositions,
             full_minutes: fullMinutes,
             minutes_saved: minutesSaved,
+            total_sentences: totalSentences,
           },
           getTTL(signal_density),
         );

@@ -9,6 +9,7 @@ export type CachedResult = {
   signal_positions: number[];
   full_minutes: number;
   minutes_saved: number;
+  total_sentences: number;
   shareId: string;
 };
 
@@ -28,7 +29,12 @@ if (!redisUrl || !redisToken) {
 const redis = new Redis({
   url: redisUrl,
   token: redisToken,
+  retry: { retries: 2 },
 });
+
+function logRedisFailure(error: unknown): void {
+  console.error("Redis operation failed:", error);
+}
 
 function hashUrl(url: string): string {
   return createHash("sha256").update(url).digest("hex");
@@ -61,6 +67,7 @@ export async function getCached(url: string): Promise<CachedResult | null> {
     !cached.signal_positions.every((position) => typeof position === "number") ||
     typeof cached.full_minutes !== "number" ||
     typeof cached.minutes_saved !== "number" ||
+    typeof cached.total_sentences !== "number" ||
     typeof cached.shareId !== "string"
   ) {
     return null;
@@ -117,11 +124,13 @@ export async function acquireLock(url: string): Promise<boolean> {
 }
 
 export async function releaseLock(url: string): Promise<void> {
-  await redis.del(lockKey(url));
+  await redis.del(lockKey(url)).catch(logRedisFailure);
 }
 
 export async function setNegativeCache(url: string): Promise<void> {
-  await redis.set(negativeCacheKey(url), { error: true }, { ex: 300 });
+  await redis
+    .set(negativeCacheKey(url), { error: true }, { ex: 300 })
+    .catch(logRedisFailure);
 }
 
 export async function isNegativelyCached(url: string): Promise<boolean> {
